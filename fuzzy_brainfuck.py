@@ -17,6 +17,10 @@ class Fuzzy_Brainfuck:
 		self.input_size = input_size
 		self.output_size = output_size
 		self.memory_size = memory_size
+		if raw_program == None:
+			self.raw_program = tf.uniform(shape = (program_size, 8), minval = -2.0, maxval = 2.0)
+		else:
+			self.raw_program = raw_program
 		self.initialize(inp)
 
 	def initialize(self, inp):
@@ -25,7 +29,7 @@ class Fuzzy_Brainfuck:
 		self.halt_point = tf.Variable([0.0]*(program_size-1) + [1.0], trainable = False) # marks the very last instruction.
 		self.direction = tf.Variable(1.0, trainable = False) # direction of execution
 		self.halt = tf.Variable(0.0, trainable = False) # tendency to ignore instruction (simulating halting)
-		self.loop_counter = tf.Variable([1.0]+[0.0]*max_loop_count, trainable = False) # counts loops (in fuzzy manner) and mutes instructions skipped by loops 
+		self.loop_counter = tf.Variable([1.0]+[0.0]*max_loop_count, trainable = False) # counts loops (in fuzzy manner) and 
 		# INPUT
 		if inp == None:
 			self.input = tf.Variable([[1.0]+[0.0]*255]*input_size, trainable = False)
