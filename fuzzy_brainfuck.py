@@ -25,7 +25,7 @@ class Fuzzy_Brainfuck:
 		self.halt_point = tf.Variable([0.0]*(program_size-1) + [1.0], trainable = False) # marks the very last instruction.
 		self.direction = tf.Variable(1.0, trainable = False) # direction of execution
 		self.halt = tf.Variable(0.0, trainable = False) # tendency to ignore instruction (simulating halting)
-		self.loop_counter = tf.Variable([1.0]+[0.0]*max_loop_count, trainable = False) # counts loops (in fuzzy manner) and 
+		self.loop_counter = tf.Variable([1.0]+[0.0]*max_loop_count, trainable = False) # counts loops (in fuzzy manner) and mutes instructions skipped by loops 
 		# INPUT
 		if inp == None:
 			self.input = tf.Variable([[1.0]+[0.0]*255]*input_size, trainable = False)
