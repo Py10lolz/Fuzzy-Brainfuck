@@ -8,8 +8,10 @@ OUT = 4
 INP = 5
 LOP = 6
 LCL = 7
-
-# for input, output, memory and program only the leftmost part is active.
+# An instruction in Fuzzy Brainfuck is a probability distribution over Brainfuck's instruction set.
+# A byte is replace by a probability distribution over all the 256 possible values. This change applies to input, output, and memory.
+# Restricting the space of probabilities to {0, 1} turns Fuzzy Brainfuck into normal Brainfuck.
+# for input, output, memory and program, only the leftmost part is active.
 # Hence, program is shifted every iterations and > < shifts the entire memory.
 class Fuzzy_Brainfuck:
 	def __init__(self, program_size = 100, output_size = 50, input_size = 50, memory_size = 200, max_loop_count = 20, raw_program = None, inp = None):
@@ -27,9 +29,9 @@ class Fuzzy_Brainfuck:
 		# PROGRAM
 		self.program = tf.nn.softmax(self.raw_program)
 		self.halt_point = tf.Variable([0.0]*(program_size-1) + [1.0], trainable = False) # marks the very last instruction.
-		self.direction = tf.Variable(1.0, trainable = False) # direction of execution
-		self.halt = tf.Variable(0.0, trainable = False) # tendency to ignore instruction (simulating halting)
-		self.loop_counter = tf.Variable([1.0]+[0.0]*max_loop_count, trainable = False) # counts loops (in fuzzy manner) and 
+		self.direction = tf.Variable(1.0, trainable = False) # direction of execution. A value of 1 corresponds to shifting the program forward and a value of 0 corresponds to shifting it backwards.
+		self.halt = tf.Variable(0.0, trainable = False) # tendency to ignore instruction (simulating halting). Value of 1 completely ignores instruction, while a value of 0 allows insrruction to be executed in full strength.
+		self.loop_counter = tf.Variable([1.0]+[0.0]*max_loop_count, trainable = False) # counts loops (in fuzzy manner). A non-zero value causes the muting of instructions because we are searching for the matching brace.
 		# INPUT
 		if inp == None:
 			self.input = tf.Variable([[1.0]+[0.0]*255]*input_size, trainable = False)
