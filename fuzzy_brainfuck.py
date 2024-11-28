@@ -80,8 +80,8 @@ class Fuzzy_Brainfuck:
 		INC = 1 - (1 - self.direction* self.program[0, LOP] * self.memory[0, 0])*(1 - bacc * self.program[0, LCL] * noz)
 		DEC = 1 - (1 - bacc * self.program[0, LOP] * noz)*(1 - self.direction * self.program[0, LCL] * self.memory[0, 0])
 		self.loop_counter = INC * tf.roll(self.loop_counter, shift = 1, axis = 0) + DEC * tf.roll(self.loop_counter, shift = 1, axis = 0)  + (1-INC-DEC)*self.loop_counter
-		# Reverse the direction upon zeroing after a loop counter interaction
-		REV = (INC + DEC) * self.loop_counter[0]
+		# Reverse the direction upon zeroing after a loop counter decrement
+		REV = DEC * self.loop_counter[0]
 		self.direction = REV * (1 - self.direction) + (1 - REV) * self.direction
 		
 
