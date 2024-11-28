@@ -1,5 +1,5 @@
 # Fuzzy Brainfuck
-Fuzzy Brainfuck is a superset of Brainfuck whose program space is continuous and its interpreter is differentiable, allowing you to train programs with Gradient-Based methods. An instruction in Fuzzy Brainfuck is a probability distribution over Brainfuck's instruction set. A byte is replaced by a probability distribution over all of the 256 possible values and this change applies to memory, input and output.
+Fuzzy Brainfuck is a superset of Brainfuck whose program space is continuous and its interpreter is differentiable, allowing you to train programs with Gradient-based methods. An instruction in Fuzzy Brainfuck is a probability distribution over Brainfuck's instruction set. A byte is replaced by a probability distribution over all of the 256 possible values and this change applies to memory, input and output.
 
 You can create an instance of Fuzzy Brainfuck by creating an instance of the class `Fuzzy_Brainfuck`. The parameters are program_size = 100, output_size = 50, memory_size = 200, max_loop_count = 20, raw_program = None, and inp = None.
 
