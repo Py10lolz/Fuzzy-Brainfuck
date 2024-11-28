@@ -9,7 +9,7 @@ INP = 5
 LOP = 6
 LCL = 7
 # An instruction in Fuzzy Brainfuck is a probability distribution over Brainfuck's instruction set.
-# A byte is replace by a probability distribution over all the 256 possible values. This change applies to input, output, and memory.
+# A byte is replaced by a probability distribution over all the 256 possible values. This change applies to input, output, and memory.
 # Restricting the space of probabilities to {0, 1} turns Fuzzy Brainfuck into normal Brainfuck.
 # for input, output, memory and program, only the leftmost part is active.
 # Hence, program is shifted every iterations and > < shifts the entire memory.
