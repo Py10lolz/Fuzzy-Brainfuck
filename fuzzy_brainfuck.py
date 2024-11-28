@@ -9,23 +9,22 @@ INP = 5
 LOP = 6
 LCL = 7
 # An instruction in Fuzzy Brainfuck is a probability distribution over Brainfuck's instruction set.
-# A byte is replaced by a probability distribution over all the 256 possible values. This change applies to input, output, and memory.
+# A byte is replace by a probability distribution over all the 256 possible values. This change applies to input, output, and memory.
 # Restricting the space of probabilities to {0, 1} turns Fuzzy Brainfuck into normal Brainfuck.
 # for input, output, memory and program, only the leftmost part is active.
 # Hence, program is shifted every iterations and > < shifts the entire memory.
 class Fuzzy_Brainfuck:
-	def __init__(self, program_size = 100, output_size = 50, input_size = 50, memory_size = 200, max_loop_count = 20, raw_program = None, inp = None):
+	def __init__(self, program_size = 100, output_size = 50, memory_size = 200, max_loop_count = 20, raw_program = None, inp = None):
 		self.program_size = program_size
-		self.input_size = input_size
 		self.output_size = output_size
 		self.memory_size = memory_size
 		if raw_program == None:
 			self.raw_program = tf.uniform(shape = (program_size, 8), minval = -2.0, maxval = 2.0)
 		else:
 			self.raw_program = raw_program
-		self.initialize(inp)
+		self.initialize(inp, input_size)
 
-	def initialize(self, inp):
+	def initialize(self, inp, input_size):
 		# PROGRAM
 		self.program = tf.nn.softmax(self.raw_program)
 		self.halt_point = tf.Variable([0.0]*(program_size-1) + [1.0], trainable = False) # marks the very last instruction.
@@ -34,8 +33,9 @@ class Fuzzy_Brainfuck:
 		self.loop_counter = tf.Variable([1.0]+[0.0]*max_loop_count, trainable = False) # counts loops (in fuzzy manner). A non-zero value causes the muting of instructions because we are searching for the matching brace.
 		# INPUT
 		if inp == None:
-			self.input = tf.Variable([[1.0]+[0.0]*255]*input_size, trainable = False)
-		self.input = inp
+			self.input = tf.Variable([[1.0]+[0.0]*255], trainable = False)
+		else:
+			self.input = inp
 		# OUTPUT
 		self.output = tf.Variable([[1.0]+[0.0]*255]*output_size, trainable = False)
 		# MEMORY
