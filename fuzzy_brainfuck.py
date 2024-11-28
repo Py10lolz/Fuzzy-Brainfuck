@@ -74,10 +74,11 @@ class Fuzzy_Brainfuck:
 		# Going backward + Encounter "]" + Current cell != 0
 		# Decrement loop counter if:
 		# Going backward + Encounter "[" + Current cell != 0
-		# Going forward + Encounter "]" + Current cell = 0
+		# Going forward + Encounter "]" + Current cell = 0 + loop_counter != 0
 		bacc = 1 - self.direction
 		noz = 1 - self.memory[0, 0]
-		INC = 1 - (1 - self.direction* self.program[0, LOP] * self.memory[0, 0])*(1 - bacc * self.program[0, LCL] * noz)
+		noz_l = 1 - self.loop_counter[0]
+		INC = 1 - (1 - self.direction* self.program[0, LOP] * self.memory[0, 0])*(1 - bacc * self.program[0, LCL] * noz * noz_l)
 		DEC = 1 - (1 - bacc * self.program[0, LOP] * noz)*(1 - self.direction * self.program[0, LCL] * self.memory[0, 0])
 		self.loop_counter = INC * tf.roll(self.loop_counter, shift = 1, axis = 0) + DEC * tf.roll(self.loop_counter, shift = 1, axis = 0)  + (1-INC-DEC)*self.loop_counter
 		# Reverse the direction upon zeroing after a loop counter decrement
