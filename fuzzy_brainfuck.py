@@ -20,14 +20,14 @@ class Fuzzy_Brainfuck:
 		self.memory_size = memory_size
 		self.max_loop_count = max_loop_count
 		if raw_program == None:
-			self.raw_program = tf.random.uniform(shape = (program_size, 8), minval = -2.0, maxval = 2.0)
+			self.raw_program = tf.Variable(tf.random.uniform(shape = (program_size, 8), minval = -2.0, maxval = 2.0))
 		else:
 			self.raw_program = raw_program
 		self.initialize(inp)
 
 	def initialize(self, inp, output_size = None, program_modified = True):
 		# PROGRAM
-		if program_modified: self.program = tf.Variable(tf.nn.softmax(self.raw_program))
+		if program_modified: self.program = tf.nn.softmax(self.raw_program)
 		self.halt_point = tf.Variable([0.0]*(self.program_size-1) + [1.0], trainable = False) # marks the very last instruction.
 		self.direction = tf.Variable(1.0, trainable = False) # direction of execution. A value of 1 corresponds to shifting the program forward and a value of 0 corresponds to shifting it backwards.
 		self.halt = tf.Variable(0.0, trainable = False) # tendency to ignore instruction (simulating halting). Value of 1 completely ignores instructions, while a value of 0 allows instructions to be executed in full strength.
