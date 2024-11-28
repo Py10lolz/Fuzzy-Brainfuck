@@ -22,9 +22,9 @@ class Fuzzy_Brainfuck:
 			self.raw_program = tf.uniform(shape = (program_size, 8), minval = -2.0, maxval = 2.0)
 		else:
 			self.raw_program = raw_program
-		self.initialize(inp, input_size)
+		self.initialize(inp)
 
-	def initialize(self, inp, input_size):
+	def initialize(self, inp):
 		# PROGRAM
 		self.program = tf.nn.softmax(self.raw_program)
 		self.halt_point = tf.Variable([0.0]*(program_size-1) + [1.0], trainable = False) # marks the very last instruction.
