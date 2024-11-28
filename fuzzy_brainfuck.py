@@ -39,7 +39,7 @@ class Fuzzy_Brainfuck:
 			self.input = inp
 		# OUTPUT
 		if output_size != None: self.output_size = output_size
-		self.output = tf.Variable([[1.0]+[0.0]*255]*self.output_size, trainable = False)
+		else: self.output = tf.Variable([[1.0]+[0.0]*255]*self.output_size, trainable = False)
 		# MEMORY
 		self.memory = tf.Variable([[1.0]+[0.0]*255]*self.memory_size, trainable = False)
 		self.time_counter = 0
