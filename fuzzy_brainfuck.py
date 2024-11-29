@@ -77,7 +77,7 @@ class Fuzzy_Brainfuck:
 		# Going backward + Encounter "]"
 		# Decrement loop counter if:
 		# Going backward + Encounter "["
-		# Going forward + Encounter "]" + Current cell = 0 + loop_counter != 0
+		# Going forward + Encounter "]" + loop_counter != 0
 		bacc = 1 - self.direction
 		noz = 1 - self.memory[0, 0]
 		noz_l = 1 - self.loop_counter[0]
