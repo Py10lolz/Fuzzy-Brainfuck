@@ -72,19 +72,24 @@ class Fuzzy_Brainfuck:
 
 	def loop_related_update(self):
 		# Increment loop counter if:
-		# Going forward + Encounter "[" + Current cell = 0
-		# Going backward + Encounter "]" + Current cell != 0
+		# Going forward + Encounter "[" + Current cell = 0 
+		# Going forward + Encounter "]" + Current cell != 0 + loop_counter == 0 (REV_1)
+		# Going backward + Encounter "]"
 		# Decrement loop counter if:
-		# Going backward + Encounter "[" + Current cell != 0
+		# Going backward + Encounter "["
 		# Going forward + Encounter "]" + Current cell = 0 + loop_counter != 0
 		bacc = 1 - self.direction
 		noz = 1 - self.memory[0, 0]
 		noz_l = 1 - self.loop_counter[0]
-		INC = 1 - (1 - self.direction* self.program[0, LOP] * self.memory[0, 0])*(1 - bacc * self.program[0, LCL] * noz)
-		DEC = 1 - (1 - bacc * self.program[0, LOP] * noz)*(1 - self.direction * self.program[0, LCL] * self.memory[0, 0]*noz_l)
+		p_LOP = self.program[0, LOP]
+		p_LCL = self.program[0, LCL]
+		INC = 1 - (1 - self.direction* p_LOP * self.memory[0, 0])*(1 - self.direction * p_LCL * noz * self.loop_counter[0])(1 - bacc * p_LCL)
+		DEC = 1 - (1 - bacc * p_LOP)*(1 - self.direction * p_LCL* self.memory[0, 0]*noz_l)
+		# Reverse the direction after:
+		# Going forward + Encounter "]" + Current cell != 0 + loop_counter == 0
+		# Going backward + Encounter "[" + loop_counter == 1
+		REV = 1 - (1 - self.direction * self.program[0, LCL] * noz * self.loop_counter[0])*(1 - bacc * p_LCL * self.loop_counter[1])
 		self.loop_counter = INC * tf.roll(self.loop_counter, shift = 1, axis = 0) + DEC * tf.roll(self.loop_counter, shift = 1, axis = 0)  + (1-INC-DEC)*self.loop_counter
-		# Reverse the direction upon zeroing after a loop counter decrement
-		REV = DEC * self.loop_counter[0]
 		self.direction = REV * (1 - self.direction) + (1 - REV) * self.direction
 		
 
