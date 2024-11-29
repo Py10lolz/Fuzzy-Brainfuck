@@ -83,7 +83,7 @@ class Fuzzy_Brainfuck:
 		noz_l = 1 - self.loop_counter[0]
 		p_LOP = self.program[0, LOP]
 		p_LCL = self.program[0, LCL]
-		INC = 1 - (1 - self.direction* p_LOP * self.memory[0, 0])*(1 - self.direction * p_LCL * noz * self.loop_counter[0])(1 - bacc * p_LCL)
+		INC = 1 - (1 - self.direction* p_LOP * self.memory[0, 0])*(1 - self.direction * p_LCL * noz * self.loop_counter[0])*(1 - bacc * p_LCL)
 		DEC = 1 - (1 - bacc * p_LOP)*(1 - self.direction * p_LCL *noz_l)
 		# Reverse the direction after:
 		# Going forward + Encounter "]" + Current cell != 0 + loop_counter == 0
