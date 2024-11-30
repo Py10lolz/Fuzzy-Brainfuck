@@ -89,7 +89,7 @@ class Fuzzy_Brainfuck:
 		# Going forward + Encounter "]" + Current cell != 0 + loop_counter == 0
 		# Going backward + Encounter "[" + loop_counter == 1
 		REV = 1 - (1 - self.direction * self.program[0, LCL] * noz * self.loop_counter[0])*(1 - bacc * p_LCL * self.loop_counter[1])
-		self.loop_counter = INC * tf.roll(self.loop_counter, shift = 1, axis = 0) + DEC * tf.roll(self.loop_counter, shift = 1, axis = 0)  + (1-INC-DEC)*self.loop_counter
+		self.loop_counter = INC * tf.roll(self.loop_counter, shift = 1, axis = 0) + DEC * tf.roll(self.loop_counter, shift = -1, axis = 0)  + (1-INC-DEC)*self.loop_counter
 		self.direction = REV * (1 - self.direction) + (1 - REV) * self.direction
 		
 
