@@ -30,8 +30,8 @@ class Fuzzy_Brainfuck:
 		if type(program) != type(None): self.program = program
 		elif program_modified: self.program = tf.nn.softmax(self.raw_program)
 		self.halt_point = tf.constant([0.0]*(self.program_size-1) + [1.0]) # marks the very last instruction.
-		self.direction = tf.constant(1.0, trainable = False) # direction of execution. A value of 1 corresponds to shifting the program forward and a value of 0 corresponds to shifting it backwards.
-		self.halt = tf.constant(0.0, trainable = False) # tendency to ignore instruction (simulating halting). Value of 1 completely ignores instructions, while a value of 0 allows instructions to be executed in full strength.
+		self.direction = tf.constant(1.0) # direction of execution. A value of 1 corresponds to shifting the program forward and a value of 0 corresponds to shifting it backwards.
+		self.halt = tf.constant(0.0) # tendency to ignore instruction (simulating halting). Value of 1 completely ignores instructions, while a value of 0 allows instructions to be executed in full strength.
 		self.loop_counter = tf.constant([1.0]+[0.0]*self.max_loop_count) # counts loops (in fuzzy manner). A non-zero value causes the muting of instructions because we are searching for the matching brace.
 		# INPUT
 		if type(inp) == type(None):
