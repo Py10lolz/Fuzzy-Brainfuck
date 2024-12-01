@@ -29,20 +29,20 @@ class Fuzzy_Brainfuck:
 		# PROGRAM
 		if type(program) != type(None): self.program = program
 		elif program_modified: self.program = tf.nn.softmax(self.raw_program)
-		self.halt_point = tf.Variable([0.0]*(self.program_size-1) + [1.0], trainable = False) # marks the very last instruction.
-		self.direction = tf.Variable(1.0, trainable = False) # direction of execution. A value of 1 corresponds to shifting the program forward and a value of 0 corresponds to shifting it backwards.
-		self.halt = tf.Variable(0.0, trainable = False) # tendency to ignore instruction (simulating halting). Value of 1 completely ignores instructions, while a value of 0 allows instructions to be executed in full strength.
-		self.loop_counter = tf.Variable([1.0]+[0.0]*self.max_loop_count, trainable = False) # counts loops (in fuzzy manner). A non-zero value causes the muting of instructions because we are searching for the matching brace.
+		self.halt_point = tf.constant([0.0]*(self.program_size-1) + [1.0]) # marks the very last instruction.
+		self.direction = tf.constant(1.0, trainable = False) # direction of execution. A value of 1 corresponds to shifting the program forward and a value of 0 corresponds to shifting it backwards.
+		self.halt = tf.constant(0.0, trainable = False) # tendency to ignore instruction (simulating halting). Value of 1 completely ignores instructions, while a value of 0 allows instructions to be executed in full strength.
+		self.loop_counter = tf.constant([1.0]+[0.0]*self.max_loop_count) # counts loops (in fuzzy manner). A non-zero value causes the muting of instructions because we are searching for the matching brace.
 		# INPUT
 		if type(inp) == type(None):
-			self.input = tf.Variable([[1.0]+[0.0]*255], trainable = False)
+			self.input = tf.constant([[1.0]+[0.0]*255])
 		else:
 			self.input = inp
 		# OUTPUT
 		if output_size != None: self.output_size = output_size
-		self.output = tf.Variable([[1.0]+[0.0]*255]*self.output_size, trainable = False)
+		self.output = tf.constant([[1.0]+[0.0]*255]*self.output_size)
 		# MEMORY
-		self.memory = tf.Variable([[1.0]+[0.0]*255]*self.memory_size, trainable = False)
+		self.memory = tf.constant([[1.0]+[0.0]*255]*self.memory_size)
 		self.time_counter = 0
 
 	def forward(self):
