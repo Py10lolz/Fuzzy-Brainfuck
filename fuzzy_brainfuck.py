@@ -103,8 +103,8 @@ class Fuzzy_Brainfuck:
 		I = self.program[0, INP] * (1 - self.halt) * self.loop_counter[0]
 		updated_memory += A * tf.concat([tf.roll(self.memory[:1], shift = 1, axis = 1), self.memory[1:]], axis = 0)
 		updated_memory +=  S * tf.concat([tf.roll(self.memory[:1], shift = -1, axis = 1), self.memory[1:]], axis = 0)
-		updated_memory += R * tf.roll(self.memory, shift = 1, axis = 0)
-		updated_memory += L * tf.roll(self.memory, shift = -1, axis = 0)
+		updated_memory += R * tf.roll(self.memory, shift = -1, axis = 0)
+		updated_memory += L * tf.roll(self.memory, shift = 1, axis = 0)
 		updated_memory +=  I * tf.concat([self.input[:1], self.memory[1:]], axis = 0)
 		updated_memory += (1-A-S-R-L-I) * self.memory
 		self.memory = updated_memory
