@@ -27,14 +27,14 @@ class Fuzzy_Brainfuck:
 
 	def initialize(self, inp, output_size = None, program = None, program_modified = True):
 		# PROGRAM
-		if program: self.program = program
+		if type(program) != type(None): self.program = program
 		elif program_modified: self.program = tf.nn.softmax(self.raw_program)
 		self.halt_point = tf.Variable([0.0]*(self.program_size-1) + [1.0], trainable = False) # marks the very last instruction.
 		self.direction = tf.Variable(1.0, trainable = False) # direction of execution. A value of 1 corresponds to shifting the program forward and a value of 0 corresponds to shifting it backwards.
 		self.halt = tf.Variable(0.0, trainable = False) # tendency to ignore instruction (simulating halting). Value of 1 completely ignores instructions, while a value of 0 allows instructions to be executed in full strength.
 		self.loop_counter = tf.Variable([1.0]+[0.0]*self.max_loop_count, trainable = False) # counts loops (in fuzzy manner). A non-zero value causes the muting of instructions because we are searching for the matching brace.
 		# INPUT
-		if inp == None:
+		if type(inp) == type(None):
 			self.input = tf.Variable([[1.0]+[0.0]*255], trainable = False)
 		else:
 			self.input = inp
@@ -55,20 +55,18 @@ class Fuzzy_Brainfuck:
 
 	def io(self):
 		# Input
-		I = self.program[0, INP] * (1 - self.halt) * (1 - self.loop_counter[0])
-		shifted_input = tf.roll(self.input, shift = 1, axis = 0)
+		I = self.program[0, INP] * (1 - self.halt) * self.loop_counter[0]
+		shifted_input = tf.roll(self.input, shift = -1, axis = 0)
 		self.input = I * shifted_input + (1 - I) * self.input
 		# Output
-		O = self.program[0, OUT] * (1 - self.halt) * (1 - self.loop_counter[0])
+		O = self.program[0, OUT] * (1 - self.halt) * self.loop_counter[0]
 		shifted_output = tf.concat([self.memory[:1], self.output[1:]], axis = 0)
-		shifted_output = tf.roll(shifted_output, shift = 1, axis = 0)
+		shifted_output = tf.roll(shifted_output, shift = -1, axis = 0)
 		self.output = O * shifted_output + (1 - O) * self.output
 
 
 	def program_update(self):
-		self.program = self.direction * tf.roll(self.program, shift = 1, axis = 0)  + (1-self.direction) * tf.roll(self.program, shift = -1, axis = 0)
-		self.halt_point = self.halt_point * tf.roll(self.halt_point, shift = 1, axis = 0)  + (1-self.direction) * tf.roll(self.halt_point, shift = -1, axis = 0)
-		self.halt = self.halt_point[0]
+		self.program = self.direction * tf.roll(self.program, shift = -1, axis = 0)  + (1-self.direction) * tf.roll(self.program, shift = 1, axis = 0)
 
 
 	def loop_related_update(self):
@@ -89,18 +87,20 @@ class Fuzzy_Brainfuck:
 		# Reverse the direction after:
 		# Going forward + Encounter "]" + Current cell != 0 + loop_counter == 0
 		# Going backward + Encounter "[" + loop_counter == 1
-		REV = 1 - (1 - self.direction * self.program[0, LCL] * noz * self.loop_counter[0])*(1 - bacc * p_LCL * self.loop_counter[1])
+		REV = 1 - (1 - self.direction * self.program[0, LCL] * noz * self.loop_counter[0])*(1 - bacc * p_LOP * self.loop_counter[1])
 		self.loop_counter = INC * tf.roll(self.loop_counter, shift = 1, axis = 0) + DEC * tf.roll(self.loop_counter, shift = -1, axis = 0)  + (1-INC-DEC)*self.loop_counter
 		self.direction = REV * (1 - self.direction) + (1 - REV) * self.direction
-		
+		# Reversal stops halting
+		self.halt = (1 - (1 - self.halt_point[0])*(1 - self.halt))*(1 - REV)
+		self.halt_point = self.direction * tf.roll(self.halt_point, shift = -1, axis = 0)  + (1-self.direction) * tf.roll(self.halt_point, shift = 1, axis = 0)
 
 	def memory_update(self):
 		updated_memory = tf.zeros(shape = (self.memory_size, 256))
-		A = self.program[0, ADD] * (1 - self.halt) * (1 - self.loop_counter[0]) 
-		S = self.program[0, SUB] * (1 - self.halt) * (1 - self.loop_counter[0]) 
-		R = self.program[0, RGT] * (1 - self.halt) * (1 - self.loop_counter[0]) 
-		L = self.program[0, LFT] * (1 - self.halt) * (1 - self.loop_counter[0])
-		I = self.program[0, INP] * (1 - self.halt) * (1 - self.loop_counter[0])
+		A = self.program[0, ADD] * (1 - self.halt) * self.loop_counter[0]
+		S = self.program[0, SUB] * (1 - self.halt) * self.loop_counter[0]
+		R = self.program[0, RGT] * (1 - self.halt) * self.loop_counter[0]
+		L = self.program[0, LFT] * (1 - self.halt) * self.loop_counter[0]
+		I = self.program[0, INP] * (1 - self.halt) * self.loop_counter[0]
 		updated_memory += A * tf.concat([tf.roll(self.memory[:1], shift = 1, axis = 1), self.memory[1:]], axis = 0)
 		updated_memory +=  S * tf.concat([tf.roll(self.memory[:1], shift = -1, axis = 1), self.memory[1:]], axis = 0)
 		updated_memory += R * tf.roll(self.memory, shift = 1, axis = 0)
@@ -111,3 +111,4 @@ class Fuzzy_Brainfuck:
 	
 	def program_ambiguity(self):
 		return (8*self.program_size - 8*tf.reduce_sum(self.program**2)) / (7*self.program_size)
+		
